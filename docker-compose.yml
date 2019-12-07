@@ -1,0 +1,34 @@
+version: "3"
+services:
+  mariadb:
+    image: mariadb
+    ports:
+      - 3260:3260
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - ./tmp/db:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - '8080:80'
+    environment:
+      PMA_HOST: mariadb
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    depends_on:
+      - mariadb
+
+  web:
+    build: .
+    ports:
+      - 80:80
+    volumes:
+      - .:/var/www/html
+    # environment:
+      # WORDPRESS_DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    depends_on:
+       - mariadb
+    # links:
+    #    - mysql
